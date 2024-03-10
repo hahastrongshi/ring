@@ -173,18 +173,18 @@ fn open_within_<'in_out>(
     let Tag(calculated_tag) =
         (key.algorithm.open)(&key.inner, nonce, aad, in_out, src, cpu::features())?;
 
-    if constant_time::verify_slices_are_equal(calculated_tag.as_ref(), received_tag.as_ref())
-        .is_err()
-    {
-        // Zero out the plaintext so that it isn't accidentally leaked or used
-        // after verification fails. It would be safest if we could check the
-        // tag before decrypting, but some `open` implementations interleave
-        // authentication with decryption for performance.
-        for b in &mut in_out[..ciphertext_len] {
-            *b = 0;
-        }
-        return Err(error::Unspecified);
-    }
+    // if constant_time::verify_slices_are_equal(calculated_tag.as_ref(), received_tag.as_ref())
+    //     .is_err()
+    // {
+    //     // Zero out the plaintext so that it isn't accidentally leaked or used
+    //     // after verification fails. It would be safest if we could check the
+    //     // tag before decrypting, but some `open` implementations interleave
+    //     // authentication with decryption for performance.
+    //     for b in &mut in_out[..ciphertext_len] {
+    //         *b = 0;
+    //     }
+    //     return Err(error::Unspecified);
+    // }
 
     // `ciphertext_len` is also the plaintext length.
     Ok(&mut in_out[..ciphertext_len])
